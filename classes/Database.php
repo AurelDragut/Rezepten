@@ -3,6 +3,7 @@ namespace App\Classes;
 
 use Exception;
 use PDO;
+use Dotenv\Dotenv;
 
 class Database implements DatabaseConnectable
 {
@@ -17,6 +18,9 @@ class Database implements DatabaseConnectable
     public function __construct(){
 
         try{
+            $dotenv = Dotenv::createImmutable(__DIR__.'/../');
+            $dotenv->load();
+
             $this->dbHost = $_ENV['DB_HOST'];
             $this->dbName = $_ENV['DB_NAME'];
             $this->dbUser = $_ENV['DB_USER'];
