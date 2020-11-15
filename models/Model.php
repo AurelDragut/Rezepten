@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Classes\Database;
+use App\Classes\PDO\Database;
 
 abstract class Model
 {
@@ -116,6 +116,7 @@ abstract class Model
     {
         if (count($fields) > 0) $fieldsList = implode(',',$fields); else $fieldsList = '*';
         self::$arguments['sql'] = "select $fieldsList from $table";
+        self::$arguments['params'] = [];
         return $this;
     }
 
@@ -170,8 +171,8 @@ abstract class Model
                     $relation_quantity = '';
                 }
                 $sql = "select * from " . $relation['relation_table'] . " where name = ?";
-                $check_relation = Database::getInstance()->executeStatement($sql, [trim($relation_name)]);
-                if ($check_relation->rowCount() > 0) {
+                $check_relations = Database::getInstance()->executeStatement($sql, [trim($relation_name)]);
+                if (Database::getInstance()->numRows($check_relations) > 0) {
                     $result = Database::getInstance()->Select($sql, [trim($relation_name)]);
                     $relation_nr = $result['nr'];
                 } else {
@@ -201,13 +202,14 @@ abstract class Model
                     $name = explode(' - ', $relation);
                     $names[] = end($name);
                 }
-                $names = array_map(function ($m) {
-                    return '\'' . $m . '\'';
-                }, $names);
+                $questionMarks = '';
+                for ($i=0;$i<count($names);$i++) $questionMarks .= '?,';
+                $questionMarks = rtrim($questionMarks, ',');
                 $sql = "DELETE FROM " . $relation_pair['relations_table'] . " 
             WHERE " . $relation_pair['own_field'] . " = '$this->nr' 
-            and " . $relation_pair['relation_field'] . " not in (SELECT nr from " . $relation_pair['relation_table'] . " where name in (:names))";
-                Database::getInstance()->Remove($sql, ['names' => implode(',', $names)]);
+            and " . $relation_pair['relation_field'] . " not in 
+            (SELECT nr from " . $relation_pair['relation_table'] . " where name in ($questionMarks))";
+                Database::getInstance()->Remove($sql, $names);
             }
         }
     }

@@ -2,7 +2,7 @@
 namespace App\Controllers;
 
 use App\Classes\Controllable;
-use App\Classes\Database;
+use App\Classes\PDO\Database;
 use App\Classes\View;
 use App\Models\Recipe;
 

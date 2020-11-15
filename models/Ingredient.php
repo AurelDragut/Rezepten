@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Classes\Modelable;
-use App\Classes\Database;
+use App\Classes\PDO\Database;
 
 class Ingredient extends Model implements Modelable
 {

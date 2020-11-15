@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Classes\Modelable;
-use App\Classes\Database;
+use App\Classes\PDO\Database;
 
 class Recipe extends Model implements Modelable
 {
@@ -124,7 +124,7 @@ class Recipe extends Model implements Modelable
     {
         if (in_array('bild', Recipe::FILLABLE)) {
             $sql = "SELECT `bild` from recipes where `nr` = ?";
-            $object = Database::getInstance()->Select($sql, get_class($this), [$this->nr]);
+            $object = Database::getInstance()->Select($sql, [$this->nr], get_class($this));
             unlink($_SERVER['DOCUMENT_ROOT'] . '/public' . $object->bild);
         }
         $this->deleteRelationsValues();

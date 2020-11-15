@@ -1,6 +1,7 @@
 <?php
-namespace App\Classes;
+namespace App\Classes\PDO;
 
+use App\Classes\DatabaseConnectable;
 use Exception;
 use PDO;
 use Dotenv\Dotenv;
@@ -18,7 +19,7 @@ class Database implements DatabaseConnectable
     public function __construct(){
 
         try{
-            $dotenv = Dotenv::createImmutable(__DIR__.'/../');
+            $dotenv = Dotenv::createImmutable(dirname(dirname(__DIR__)));
             $dotenv->load();
 
             $this->dbHost = $_ENV['DB_HOST'];
@@ -122,5 +123,10 @@ class Database implements DatabaseConnectable
     public function lastInsertId():int
     {
         return $this->connection->lastInsertId();
+    }
+
+    public function numRows($stmt)
+    {
+        return $stmt->rowCount();
     }
 }
